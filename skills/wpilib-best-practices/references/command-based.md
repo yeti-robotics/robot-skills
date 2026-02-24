@@ -3,6 +3,14 @@
 > Applies to: WPILib 2026
 > Sources: [Structuring a Command-Based Robot Project](https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html) · [Organizing Command-Based Robot Projects](https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html)
 
+## Contents
+
+- [Project Structure](#project-structure) — `Robot`, `RobotContainer`, `Constants`, directory layout
+- [Command Definition Patterns](#command-definition-patterns) — pattern selection, factory methods, subclassing
+- [Common Anti-Patterns](#common-anti-patterns)
+
+---
+
 ## Project Structure
 
 | Class/Dir | Responsibility |
@@ -17,7 +25,7 @@
 ### Robot Class Essentials
 
 - **Constructor**: Instantiate `RobotContainer`.
-- **robotPeriodic()**: Must call `CommandScheduler.getInstance().run()`. Without this, no commands run.
+- **robotPeriodic()**: Must call `CommandScheduler.getInstance().run()`. See [command-scheduler.md](command-scheduler.md) for scheduler behavior.
 - **autonomousInit()**: Schedule command from `robotContainer.getAutonomousCommand()`.
 - **teleopInit()**: Cancel any running autonomous command.
 
@@ -178,6 +186,4 @@ public class ScoreCoralCommand extends SequentialCommandGroup {
 | ------------ | ------- | --- |
 | Calling `subsystem.method()` directly in `teleopPeriodic()` | Bypasses scheduler; conflicts with running commands | Bind to a command via trigger/button instead |
 | Defining the same inline command in multiple places | Bugs fixed in one place silently persist elsewhere | Extract to an instance factory method on the subsystem |
-| Using an instance factory for multi-subsystem commands | Creates circular dependency between subsystems | Use a static factory or `AutoRoutines` class |
 | Constants scattered across subsystem files | Same port/gain defined in multiple places | Consolidate into `Constants` with inner classes per subsystem |
-| Subclassing `SequentialCommandGroup` for every routine | One file per routine; composition harder to read | Use `Commands.sequence()` in a factory method |
